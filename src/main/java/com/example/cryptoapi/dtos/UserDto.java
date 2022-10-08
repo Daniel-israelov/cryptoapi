@@ -13,7 +13,7 @@ import java.util.Set;
  * This class represents the fields of {@link User} class we would like to share with the clients.
  */
 @Value
-@JsonPropertyOrder({"Identity number", "Full Name", "Age", "Gender", "Wallets"})
+@JsonPropertyOrder({"Identity Number", "Full Name", "Age", "Gender", "Wallets"})
 public class UserDto {
 
     @JsonIgnore
@@ -22,7 +22,7 @@ public class UserDto {
     @JsonProperty("Identity Number")
     public Long getIdentityNumber() { return user.getIdentityNumber(); }
 
-    @JsonProperty("Full name")
+    @JsonProperty("Full Name")
     public String getFullName() { return String.format("%s %s", user.getFirstName(), user.getLastName()); }
 
     @JsonProperty("Age")
