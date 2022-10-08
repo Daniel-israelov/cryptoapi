@@ -6,15 +6,16 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * This data class represents a crypto coin type and not a concrete coin. e.g. Bitcoin, Ethereum, etc.
+ * This data class represents a crypto {@link Coin} type and not a concrete {@link Coin}. e.g. Bitcoin, Ethereum, etc.
  */
 @Entity
 @NoArgsConstructor
 @Data
-public class CoinType {
+public class CoinType implements Serializable {
 
     @Id
     @GeneratedValue

@@ -1,41 +1,58 @@
 package com.example.cryptoapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * This data class represents a crypto wallet, sorting the coins by types (e.g. Bitcoin, Ethereum, etc.).
+ * This data class represents a crypto wallet, storing concrete crypto {@link Coin}s (e.g. Bitcoin, Ethereum, etc.).
  */
 @Entity
 @NoArgsConstructor
 @Data
-public class Wallet {
+public class Wallet implements Serializable {
 
     @Id
     @GeneratedValue
-    private Long id;
-    private final HashMap<String, List<Coin>> coinsByType = new HashMap<>();
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    private UUID id;
+    private String provider;
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "wallets")
+    private final Set<User> owners = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER)
+    private final Set<Coin> coins = new HashSet<>();
 
-    public Wallet(Long id) { this.id = id; }
+    public Wallet(String provider) { this.provider = provider; }
 
-    /**
-     * This method gets a concrete crypto coin and adds it to the corresponding list in the coins hashmap.
-     * @param coinToAdd a concrete crypto coin
-     */
-    public void addCoin(Coin coinToAdd) {
+    public void addOwner(@NotNull User... ownersToAdd) { this.owners.addAll(Arrays.asList(ownersToAdd)); }
 
-        String coinTypeName = coinToAdd.getCoinType().getName();
-        if (this.coinsByType.containsKey(coinTypeName)) {
-            this.coinsByType.get(coinTypeName).add(coinToAdd);
+    public void removeOwner(@NotNull User... ownersToRemove) {
+        for (User owner : ownersToRemove) {
+            this.owners.remove(owner);
         }
-        else {
-            this.coinsByType.put(coinTypeName, new java.util.ArrayList<>(Collections.emptyList()));
-            addCoin(coinToAdd);
-        }
+    }
+
+    public void addCoin(@NotNull Coin coinToAdd) {
+        this.coins.add(coinToAdd);
+        coinToAdd.storeInWallet(this);
+    }
+
+    @Override
+    public int hashCode() { return this.id == null ? 0 : this.id.hashCode(); }
+
+    @Override
+    public String toString() {
+        return provider + "Wallet{" +
+                "owners=" + owners.stream().map(owner -> owner.getFirstName() + owner.getLastName()).collect(Collectors.toList()) +
+                ", coinsByType=" + coins +
+                '}';
     }
 }
