@@ -124,9 +124,15 @@ public class SeedDB {
             log.info("w3 = " + w3.getId() + " -> " + w3);
             log.info("w4 = " + w4.getId() + " -> " + w4);
             walletRepository.save(w1);
-            walletRepository.save(w2);
-            walletRepository.save(w3);
-            walletRepository.save(w4);
+            if (w1.getId() != w2.getId()) {
+                walletRepository.save(w2);
+            }
+            if (w1.getId() != w3.getId() && w2.getId() != w3.getId()) {
+                walletRepository.save(w3);
+            }
+            if (w1.getId() != w4.getId() && w2.getId() != w4.getId() && w3.getId() != w4.getId()) {
+                walletRepository.save(w4);
+            }
             log.info("idan = " + userRepository.save(idan));
             log.info("daniel = " + userRepository.save(daniel));
         };
