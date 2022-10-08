@@ -1,5 +1,6 @@
 package com.example.cryptoapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
@@ -24,6 +25,7 @@ public class Coin implements Serializable {
     private UUID uuid;
     @ManyToOne
     private CoinType coinType;
+    @JsonIgnore
     @ManyToOne
     private Wallet storedInWallet;
 
