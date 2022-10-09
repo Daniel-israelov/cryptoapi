@@ -1,11 +1,22 @@
 package com.example.cryptoapi.repositories;
 
-import com.example.cryptoapi.entities.User;
+import com.example.cryptoapi.entities.UserEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+import java.util.List;
+import java.util.Optional;
 
-    User findByIdentityNumber(Long identityNumber);
+@Repository
+public interface UserRepository extends CrudRepository<UserEntity, Long> {
+
+    Optional<UserEntity> findByIdentityNumber(Long identityNumber);
+
+    Optional<UserEntity> findByFirstNameAndLastName(String firstName, String lastName);
+
+    Boolean existsByIdentityNumber(Long identityNumber);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE is_male=:gender")
+    List<UserEntity> findAllByIsMale(Boolean gender);
 }
