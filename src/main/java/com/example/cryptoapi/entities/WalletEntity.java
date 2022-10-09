@@ -12,12 +12,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * This data class represents a crypto wallet, storing concrete crypto {@link Coin}s (e.g. Bitcoin, Ethereum, etc.).
+ * This data class represents a crypto wallet, storing concrete crypto {@link CoinEntity}s (e.g. Bitcoin, Ethereum, etc.).
  */
 @Entity
 @NoArgsConstructor
 @Data
-public class Wallet implements Serializable {
+public class WalletEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -25,24 +25,24 @@ public class Wallet implements Serializable {
     private UUID id;
     private String provider;
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "wallets")
-    private final Set<User> owners = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "walletEntities")
+    private final Set<UserEntity> owners = new HashSet<>();
     @OneToMany(fetch = FetchType.EAGER)
-    private final Set<Coin> coins = new HashSet<>();
+    private final Set<CoinEntity> coinEntities = new HashSet<>();
 
-    public Wallet(String provider) { this.provider = provider; }
+    public WalletEntity(String provider) { this.provider = provider; }
 
-    public void addOwner(@NotNull User... ownersToAdd) { this.owners.addAll(Arrays.asList(ownersToAdd)); }
+    public void addOwner(@NotNull UserEntity... ownersToAdd) { this.owners.addAll(Arrays.asList(ownersToAdd)); }
 
-    public void removeOwner(@NotNull User... ownersToRemove) {
-        for (User owner : ownersToRemove) {
+    public void removeOwner(@NotNull UserEntity... ownersToRemove) {
+        for (UserEntity owner : ownersToRemove) {
             this.owners.remove(owner);
         }
     }
 
-    public void addCoin(@NotNull Coin coinToAdd) {
-        this.coins.add(coinToAdd);
-        coinToAdd.storeInWallet(this);
+    public void addCoin(@NotNull CoinEntity coinEntityToAdd) {
+        this.coinEntities.add(coinEntityToAdd);
+        coinEntityToAdd.storeInWallet(this);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Wallet implements Serializable {
     public String toString() {
         return provider + "Wallet{" +
                 "owners=" + owners.stream().map(owner -> owner.getFirstName() + owner.getLastName()).collect(Collectors.toList()) +
-                ", coinsByType=" + coins +
+                ", coinsByType=" + coinEntities +
                 '}';
     }
 }

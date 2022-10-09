@@ -10,12 +10,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * This data class represents a crypto {@link Coin} type and not a concrete {@link Coin}. e.g. Bitcoin, Ethereum, etc.
+ * This data class represents a crypto {@link CoinEntity} type and not a concrete {@link CoinEntity}. e.g. Bitcoin, Ethereum, etc.
  */
 @Entity
 @NoArgsConstructor
 @Data
-public class CoinType implements Serializable {
+public class CoinTypeEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -29,8 +29,8 @@ public class CoinType implements Serializable {
     private Double priceChange24h;
     private LocalDateTime lastUpdated;
 
-    public CoinType(String name, String imageUrl, Double currentPrice, Double marketCap,
-                    Double high24h, Double low24h, Double priceChange24h) {
+    public CoinTypeEntity(String name, String imageUrl, Double currentPrice, Double marketCap,
+                          Double high24h, Double low24h, Double priceChange24h) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.currentPrice = currentPrice;

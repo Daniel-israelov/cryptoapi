@@ -1,6 +1,6 @@
 package com.example.cryptoapi.services;
 
-import com.example.cryptoapi.entities.CoinType;
+import com.example.cryptoapi.entities.CoinTypeEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Async;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * This Service pulls {@link CoinType} data from an external endpoint.
+ * This Service pulls {@link CoinTypeEntity} data from an external endpoint.
  */
 @Slf4j
 @Service
@@ -25,30 +25,30 @@ public class ExternalEndpointService {
     public ExternalEndpointService(RestTemplateBuilder templateBuilder) { this.template = templateBuilder.build(); }
 
     /**
-     * This method returns {@link CoinType}s from an external endpoint asynchronously
-     * as a {@link CompletableFuture<List>} of {@link CoinType}s.
-     * @return all {@link CoinType}s from the external endpoint.
+     * This method returns {@link CoinTypeEntity}s from an external endpoint asynchronously
+     * as a {@link CompletableFuture<List>} of {@link CoinTypeEntity}s.
+     * @return all {@link CoinTypeEntity}s from the external endpoint.
      */
     @Async
-    public CompletableFuture<List<CoinType>> pullExternalData() {
+    public CompletableFuture<List<CoinTypeEntity>> pullExternalData() {
 
         List coinTypesAsJson = this.template.getForObject(this.externalEndpointUrl, List.class);
-        List<CoinType> coinTypes = new ArrayList<>();
+        List<CoinTypeEntity> coinTypeEntities = new ArrayList<>();
         assert coinTypesAsJson != null;
         int numberOfCoinTypes = coinTypesAsJson.size();
-        CoinType tempCoinType;
+        CoinTypeEntity tempCoinTypeEntity;
 
         for (int i = 0; i < numberOfCoinTypes; i++) {
 
-            tempCoinType = Parse((LinkedHashMap) coinTypesAsJson.get(i));
-            coinTypes.add(tempCoinType);
-            log.info("Parsed CoinType {}/{} = {}", (i + 1), numberOfCoinTypes, tempCoinType);
+            tempCoinTypeEntity = Parse((LinkedHashMap) coinTypesAsJson.get(i));
+            coinTypeEntities.add(tempCoinTypeEntity);
+            log.info("Parsed CoinType {}/{} = {}", (i + 1), numberOfCoinTypes, tempCoinTypeEntity);
         }
-        return CompletableFuture.completedFuture(coinTypes);
+        return CompletableFuture.completedFuture(coinTypeEntities);
     }
 
-    private CoinType Parse(LinkedHashMap dataToParse) {
-        return new CoinType(dataToParse.get("name").toString(),
+    private CoinTypeEntity Parse(LinkedHashMap dataToParse) {
+        return new CoinTypeEntity(dataToParse.get("name").toString(),
                             dataToParse.get("image").toString(),
                             Double.parseDouble(dataToParse.get("current_price").toString()),
                             Double.parseDouble(dataToParse.get("market_cap").toString()),

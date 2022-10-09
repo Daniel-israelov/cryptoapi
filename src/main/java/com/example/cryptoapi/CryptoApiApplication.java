@@ -2,6 +2,7 @@ package com.example.cryptoapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -14,6 +15,11 @@ public class CryptoApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CryptoApiApplication.class, args);
+    }
+
+    @Bean
+    public RestTemplateBuilder builder(){
+        return new RestTemplateBuilder();
     }
 
     @Bean
