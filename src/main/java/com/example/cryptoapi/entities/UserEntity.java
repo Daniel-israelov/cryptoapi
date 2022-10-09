@@ -18,7 +18,6 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Data
-@Table(name = "USERS")
 public class UserEntity {
 
     @Id
