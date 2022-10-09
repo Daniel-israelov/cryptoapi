@@ -12,6 +12,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class UserService {
         if (!gender.equals("male") && !gender.equals("female")) {
             String msg = "Invalid gender input: '" + gender + "'";
             log.info(msg);
-            throw new UserNotFoundException(gender);
+            return null;
         }
         List<UserEntity> allByGender = userRepository.findAllByIsMale(gender.equals("male"));
 
@@ -77,4 +78,32 @@ public class UserService {
                 .map(UserDto::new)
                 .toList());
     }
+
+    public void deleteByIdentityNumber(Long identityNumber) {
+        UserEntity user = userRepository.findByIdentityNumber(identityNumber)
+                .orElseThrow(() -> new UserNotFoundException(identityNumber));
+
+        userRepository.deleteById(user.getId());
+        log.info("deleted");
+    }
+
+/*    public EntityModel<UserDto> updateUser(Long identityNumber, UserEntity userEntity) {
+        UserEntity user = userRepository.findByIdentityNumber(identityNumber)
+                .orElseThrow(() -> new UserNotFoundException(identityNumber));
+
+        Field[] fields = user.getClass().getDeclaredFields();
+
+        for(Field f:fields){
+            try {
+                Object x = f.get(userEntity);
+                if (x != null) {
+                    f.set(user, x);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return userDtoAssembler.toModel(new UserDto(user));
+    }*/
 }
