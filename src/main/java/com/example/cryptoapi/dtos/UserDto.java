@@ -1,7 +1,7 @@
 package com.example.cryptoapi.dtos;
 
-import com.example.cryptoapi.entities.User;
-import com.example.cryptoapi.entities.Wallet;
+import com.example.cryptoapi.entities.UserEntity;
+import com.example.cryptoapi.entities.WalletEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -10,27 +10,27 @@ import lombok.Value;
 import java.util.Set;
 
 /**
- * This class represents the fields of {@link User} class we would like to share with the clients.
+ * This class represents the fields of {@link UserEntity} class we would like to share with the clients.
  */
 @Value
 @JsonPropertyOrder({"Identity Number", "Full Name", "Age", "Gender", "Wallets"})
 public class UserDto {
 
     @JsonIgnore
-    User user;
+    UserEntity userEntity;
 
     @JsonProperty("Identity Number")
-    public Long getIdentityNumber() { return user.getIdentityNumber(); }
+    public Long getIdentityNumber() { return userEntity.getIdentityNumber(); }
 
     @JsonProperty("Full Name")
-    public String getFullName() { return String.format("%s %s", user.getFirstName(), user.getLastName()); }
+    public String getFullName() { return String.format("%s %s", userEntity.getFirstName(), userEntity.getLastName()); }
 
     @JsonProperty("Age")
-    public Integer getAge() { return user.getAge(); }
+    public Integer getAge() { return userEntity.getAge(); }
 
     @JsonProperty("Gender")
-    public String getGender() { return user.getIsMale() ? "Male" : "Female"; }
+    public String getGender() { return userEntity.getIsMale() ? "Male" : "Female"; }
 
     @JsonProperty("Wallets")
-    public Set<Wallet> getWallets() { return user.getWallets(); }
+    public Set<WalletEntity> getWallets() { return userEntity.getWalletEntities(); }
 }
