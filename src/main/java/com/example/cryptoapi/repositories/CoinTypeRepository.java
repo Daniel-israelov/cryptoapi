@@ -1,11 +1,11 @@
 package com.example.cryptoapi.repositories;
 
-import com.example.cryptoapi.entities.CoinType;
+import com.example.cryptoapi.entities.CoinTypeEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CoinTypeRepository extends CrudRepository<CoinType, Long> {
+public interface CoinTypeRepository extends CrudRepository<CoinTypeEntity, Long> {
 
-    CoinType findByName(String name);
+    CoinTypeEntity findByName(String name);
 }
