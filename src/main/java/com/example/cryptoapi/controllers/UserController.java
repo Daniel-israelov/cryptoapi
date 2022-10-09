@@ -39,6 +39,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByIdentityNumber(identityNumber));
     }
 
+    //ToDo - return collection (also update service and repo files)
     @GetMapping("/{firstName}/{lastName}")
     @Operation(summary = "GET user by his full name")
     public ResponseEntity<EntityModel<UserDto>> getUserByFullName(@PathVariable String firstName, @PathVariable String lastName) {
@@ -47,9 +48,13 @@ public class UserController {
 
     @GetMapping("/bygender")
     @Operation(summary = "GET all users by gender")
-    public ResponseEntity<CollectionModel<EntityModel<UserDto>>> getUsersByGender(
+    public ResponseEntity<?> getUsersByGender(
             @RequestParam(required = false, defaultValue = "male") String gender) {
 
+        CollectionModel<EntityModel<UserDto>> allByGender = userService.findAllByGender(gender);
+        if (allByGender == null) {
+            return ResponseEntity.badRequest().body("Invalid gender input '" + gender + "'");
+        }
         return ResponseEntity.ok(userService.findAllByGender(gender));
     }
 
@@ -66,4 +71,17 @@ public class UserController {
             return ResponseEntity.badRequest().body("Failed to create user = " + userEntity);
         }
     }
+
+    @DeleteMapping("/{identityNumber}")
+    @Operation(summary = "DELETE user by identity number")
+    public ResponseEntity<?> deleteByIdentityNumber(@PathVariable Long identityNumber) {
+        userService.deleteByIdentityNumber(identityNumber);
+        return ResponseEntity.ok("User with identityNumber=" + identityNumber + " deleted");
+    }
+
+/*    @PutMapping("/{identityNumber}")
+    @Operation(summary = "PUT request to update a user")
+    public ResponseEntity<?> updateUser(@PathVariable Long identityNumber, @RequestBody UserEntity userEntity) {
+        return ResponseEntity.ok(userService.updateUser(identityNumber, userEntity));
+    }*/
 }
