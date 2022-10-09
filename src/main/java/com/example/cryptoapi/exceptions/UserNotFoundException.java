@@ -11,8 +11,4 @@ public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String firstName, String lastName) {
         super(baseMessage + "name = " + firstName + " " + lastName);
     }
-
-    public UserNotFoundException(String gender) {
-        super("Invalid input: '" + gender + "'");
-    }
 }
