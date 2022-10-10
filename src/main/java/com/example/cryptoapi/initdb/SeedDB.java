@@ -68,8 +68,8 @@ public class SeedDB {
         return args -> {
             log.info("\n\t\t\tconnect between users and wallets . . .");
             UserEntity idan = userRepository.findByIdentityNumber(123L).get();
-            WalletEntity coinbase = walletRepository.findByProvider("Coinbase");
-            WalletEntity exodus = walletRepository.findByProvider("Exodus");
+            WalletEntity coinbase = walletRepository.findByProvider("Coinbase").get(0);
+            WalletEntity exodus = walletRepository.findByProvider("Exodus").get(0);
             idan.connectWallets(coinbase, exodus);
             log.info("connecting 'coinbase' and 'exodus' wallets to idan = " + idan.connectWallets(coinbase, exodus));
             log.info("saved 'coinbase' with idan as owner = " + walletRepository.save(coinbase));
@@ -78,7 +78,7 @@ public class SeedDB {
             log.info("saved idan with new wallets in repo = " + idan);
 
             UserEntity daniel = userRepository.findByIdentityNumber(1L).get();
-            WalletEntity ledger = walletRepository.findByProvider("Ledger");
+            WalletEntity ledger = walletRepository.findByProvider("Ledger").get(0);
             log.info("connecting 'coinbase' and 'ledger' wallets to daniel = " + daniel.connectWallets(coinbase, ledger));
             log.info("saved 'coinbase' with daniel as owner = " + walletRepository.save(coinbase));
             log.info("saved 'ledger' with daniel as owner = " + walletRepository.save(ledger));
