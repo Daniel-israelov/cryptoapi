@@ -1,6 +1,7 @@
 package com.example.cryptoapi.advices;
 
 import com.example.cryptoapi.exceptions.UserAlreadyExistsException;
+import com.example.cryptoapi.exceptions.UserIllegalAgeRangeException;
 import com.example.cryptoapi.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,14 +15,15 @@ public class UserAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
-    String userNotFoundHandler(UserNotFoundException unfe) {
-        return unfe.getMessage();
-    }
+    String userNotFoundHandler(UserNotFoundException unfe) { return unfe.getMessage(); }
 
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UserAlreadyExistsException.class)
-    String userAlreadyExistsHandler(UserAlreadyExistsException uaee) {
-        return uaee.getMessage();
-    }
+    String userAlreadyExistsHandler(UserAlreadyExistsException uaee) { return uaee.getMessage(); }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UserIllegalAgeRangeException.class)
+    String userIllegalAgeRangeHandler(UserIllegalAgeRangeException uiare) { return uiare.getMessage(); }
 }
