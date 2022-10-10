@@ -17,6 +17,9 @@ public interface UserRepository extends CrudRepository<UserEntity, Long> {
 
     Boolean existsByIdentityNumber(Long identityNumber);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE is_male=:gender")
+    @Query(nativeQuery = true, value = "SELECT * FROM user_entity WHERE is_male=:gender")
     List<UserEntity> findAllByIsMale(Boolean gender);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM user_entity WHERE age BETWEEN :from AND :to")
+    List<UserEntity> findAllByAgeRange(Integer from, Integer to);
 }

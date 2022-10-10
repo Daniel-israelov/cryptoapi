@@ -46,16 +46,23 @@ public class UserController {
         return ResponseEntity.ok(userService.findByFullName(firstName, lastName));
     }
 
-    @GetMapping("/bygender")
+    @GetMapping("/gender")
     @Operation(summary = "GET all users by gender")
-    public ResponseEntity<?> getUsersByGender(
-            @RequestParam(required = false, defaultValue = "male") String gender) {
+    public ResponseEntity<?> getUsersByGender(@RequestParam(required = false, defaultValue = "male") String gender) {
 
-        CollectionModel<EntityModel<UserDto>> allByGender = userService.findAllByGender(gender);
-        if (allByGender == null) {
-            return ResponseEntity.badRequest().body("Invalid gender input '" + gender + "'");
+        CollectionModel<EntityModel<UserDto>> allUsersByGender = userService.findAllByGender(gender);
+        if (allUsersByGender == null) {
+            return ResponseEntity.badRequest().body("Invalid gender input: '" + gender + "'. Insert 'male' or 'female' only.");
         }
         return ResponseEntity.ok(userService.findAllByGender(gender));
+    }
+
+    @GetMapping("/age")
+    @Operation(summary = "GET all users in a certain age range")
+    public ResponseEntity<?> getUsersByAgeRange(@RequestParam(required = false, defaultValue = "0") Integer from,
+                                                @RequestParam(required = false, defaultValue = "120") Integer to) {
+
+        return ResponseEntity.ok(userService.findAllByAgeRange(from, to));
     }
 
     @PostMapping("/createnew")
@@ -64,9 +71,7 @@ public class UserController {
         try {
             EntityModel<UserDto> user = userService.createUser(userEntity);
             return ResponseEntity
-                    .created(new URI(user.getRequiredLink(IanaLinkRelations.SELF)
-                            .getHref()))
-                    .body(user);
+                    .created(new URI(user.getRequiredLink(IanaLinkRelations.SELF).getHref())).body(user);
         } catch (URISyntaxException uriSyntaxException) {
             return ResponseEntity.badRequest().body("Failed to create user = " + userEntity);
         }
@@ -74,14 +79,15 @@ public class UserController {
 
     @DeleteMapping("/{identityNumber}")
     @Operation(summary = "DELETE user by identity number")
-    public ResponseEntity<?> deleteByIdentityNumber(@PathVariable Long identityNumber) {
+    public ResponseEntity<String> deleteByIdentityNumber(@PathVariable Long identityNumber) {
         userService.deleteByIdentityNumber(identityNumber);
-        return ResponseEntity.ok("User with identityNumber=" + identityNumber + " deleted");
+        return ResponseEntity.ok("User with identityNumber = " + identityNumber + " deleted");
     }
 
-/*    @PutMapping("/{identityNumber}")
+    @PutMapping("/{identityNumber}")
     @Operation(summary = "PUT request to update a user")
-    public ResponseEntity<?> updateUser(@PathVariable Long identityNumber, @RequestBody UserEntity userEntity) {
+    public ResponseEntity<EntityModel<UserDto>> updateUser(@PathVariable Long identityNumber,
+                                                           @RequestBody UserEntity userEntity) {
         return ResponseEntity.ok(userService.updateUser(identityNumber, userEntity));
-    }*/
+    }
 }
