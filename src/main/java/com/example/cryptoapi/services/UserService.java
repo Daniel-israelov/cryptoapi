@@ -34,6 +34,7 @@ public class UserService {
 
         List<UserDto> dtoUsers = StreamSupport.stream(userRepository.findAll().spliterator(), false)
                 .map(UserDto::new).collect(Collectors.toList());
+        log.info("Retrieved all users from service");
         return userDtoAssembler.toCollectionModel(dtoUsers);
     }
 
@@ -53,6 +54,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new UserNotFoundException(firstName, lastName);
         }
+        log.info("Retrieved user by name '" + firstName + "' - '" + lastName + "' from service = " + user);
         return userDtoAssembler.toModel(new UserDto(user.get()));
     }
 
@@ -94,7 +96,6 @@ public class UserService {
     public void deleteByIdentityNumber(Long identityNumber) {
         UserEntity user = userRepository.findByIdentityNumber(identityNumber)
                 .orElseThrow(() -> new UserNotFoundException(identityNumber));
-
         userRepository.deleteById(user.getId());
         log.info("User with id = " + identityNumber + " deleted in service = " + user);
     }
@@ -106,7 +107,6 @@ public class UserService {
 
         user.setFirstName(userEntity.getFirstName() == null ? user.getFirstName() : userEntity.getFirstName());
         user.setLastName(userEntity.getLastName() == null ? user.getLastName() : userEntity.getLastName());
-        user.setIsMale(userEntity.getIsMale() == null ? user.getIsMale() : userEntity.getIsMale());
         user.setAge(userEntity.getAge() == null ? user.getAge() : userEntity.getAge());
         user.setWalletEntities(userEntity.getWalletEntities().size() == 0 ? user.getWalletEntities() : userEntity.getWalletEntities());
         userRepository.save(user);

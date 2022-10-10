@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
 @Tag(name = "User Controller", description = "User CRUD controller")
