@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Configuration
 @Slf4j
+@SuppressWarnings(value = {"OptionalGetWithoutIsPresent"})
 public class SeedDB {
 
     /**
@@ -33,7 +34,7 @@ public class SeedDB {
     public CommandLineRunner initCoinTypes(ExternalEndpointService externalEndpointService,
                                            CoinTypeRepository coinTypeRepository) {
         return args -> {
-            log.info("\n\t\t\tinit CoinTypes . . .");
+            log.info("initializing CoinTypes...");
             CompletableFuture<List<CoinTypeEntity>> completableFutureCoinTypes = externalEndpointService.pullExternalData();
             completableFutureCoinTypes.join();
             List<CoinTypeEntity> coinTypeEntityList = completableFutureCoinTypes.get();
@@ -48,13 +49,13 @@ public class SeedDB {
     @Bean
     CommandLineRunner initUsersAndWallets(UserRepository userRepository, WalletRepository walletRepository) {
         return args -> {
-            log.info("\n\t\t\tinit Users . . .");
+            log.info("initializing Users...");
             log.info("idan = " + userRepository.save(
                     new UserEntity(123L, "idan", "montekyo", true, 22)));
             log.info("daniel = " + userRepository.save(
                     new UserEntity(1L, "daniel", "israelov", true, 33)));
 
-            log.info("\n\t\t\tinit Wallets . . .");
+            log.info("initializing Wallets . . .");
             log.info("coinbase = " + walletRepository.save(new WalletEntity("Coinbase")));
             log.info("trezor = " + walletRepository.save(new WalletEntity("Trezor")));
             log.info("ledger = " + walletRepository.save(new WalletEntity("Ledger")));
@@ -66,7 +67,7 @@ public class SeedDB {
     @Bean
     CommandLineRunner connectBetweenUsersAndWallets(UserRepository userRepository, WalletRepository walletRepository) {
         return args -> {
-            log.info("\n\t\t\tconnect between users and wallets . . .");
+            log.info("Connect between users and wallets . . .");
             UserEntity idan = userRepository.findByIdentityNumber(123L).get();
             WalletEntity coinbase = walletRepository.findByProvider("Coinbase").get(0);
             WalletEntity exodus = walletRepository.findByProvider("Exodus").get(0);
@@ -93,7 +94,7 @@ public class SeedDB {
                                                            UserRepository userRepository,
                                                            WalletRepository walletRepository) {
         return args -> {
-            log.info("\n\t\t\tinit concrete Coins . . .");
+            log.info("initializing concrete Coins . . .");
             CoinTypeEntity bitcoin = coinTypeRepository.findByName("Bitcoin");
             CoinTypeEntity ethereum = coinTypeRepository.findByName("Ethereum");
             CoinTypeEntity cardano = coinTypeRepository.findByName("Cardano");
@@ -108,14 +109,14 @@ public class SeedDB {
             CoinEntity concretePolkadot = new CoinEntity(polkadot);
             log.info("Creating concrete Polkadot = " + coinRepository.save(concretePolkadot));
 
-            log.info("\n\t\t\tdistributing concrete coins to users . . .");
+            log.info("Distributing concrete coins to users . . .");
             UserEntity idan = userRepository.findByIdentityNumber(123L).get();
             WalletEntity w1 = idan.addCoinToWallet(concreteBitcoin);
             WalletEntity w2 = idan.addCoinToWallet(concreteEthereum);
             UserEntity daniel = userRepository.findByIdentityNumber(1L).get();
             WalletEntity w3 = daniel.addCoinToWallet(concreteCardano);
             WalletEntity w4 = daniel.addCoinToWallet(concretePolkadot);
-            log.info("saving all data to User, Wallet, Coin repositories . . .");
+            log.info("Saving all data to User, Wallet, Coin repositories . . .");
             coinRepository.save(concreteBitcoin);
             coinRepository.save(concreteEthereum);
             coinRepository.save(concreteCardano);

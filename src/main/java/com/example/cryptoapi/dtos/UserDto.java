@@ -15,25 +15,25 @@ import java.util.stream.Collectors;
  * This class represents the fields of {@link UserEntity} class we would like to share with the clients.
  */
 @Value
-@JsonPropertyOrder({"Identity Number", "Full Name", "Age", "Gender", "Wallets"})
+@JsonPropertyOrder({"identityNumber", "fullName", "age", "gender", "wallets"})
 public class UserDto {
 
     @JsonIgnore
     UserEntity userEntity;
 
-    @JsonProperty("Identity Number")
+    @JsonProperty("identityNumber")
     public Long getIdentityNumber() { return userEntity.getIdentityNumber(); }
 
-    @JsonProperty("Full Name")
+    @JsonProperty("fullName")
     public String getFullName() { return String.format("%s %s", userEntity.getFirstName(), userEntity.getLastName()); }
 
-    @JsonProperty("Age")
+    @JsonProperty("age")
     public Integer getAge() { return userEntity.getAge(); }
 
-    @JsonProperty("Gender")
+    @JsonProperty("gender")
     public String getGender() { return userEntity.getIsMale() ? "Male" : "Female"; }
 
-    @JsonProperty("Wallets")
+    @JsonProperty("wallets")
     public Set<EntityModel<WalletDto>> getWallets() {
         WalletDtoAssembler walletDtoAssembler = new WalletDtoAssembler();
         return userEntity.getWalletEntities()

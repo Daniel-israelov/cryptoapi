@@ -1,5 +1,6 @@
 package com.example.cryptoapi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -11,6 +12,7 @@ import java.util.concurrent.Executor;
 
 @SpringBootApplication
 @EnableAsync
+@Slf4j
 public class CryptoApiApplication {
 
     public static void main(String[] args) {
@@ -18,18 +20,18 @@ public class CryptoApiApplication {
     }
 
     @Bean
-    public RestTemplateBuilder builder(){
+    public RestTemplateBuilder builder() {
         return new RestTemplateBuilder();
     }
 
     @Bean
     public Executor taskExecutor() {
+        log.info("Configuring task executor...");
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(3);
         taskExecutor.setMaxPoolSize(5);
         taskExecutor.setKeepAliveSeconds(1);
         taskExecutor.setQueueCapacity(100);
-
         taskExecutor.setThreadNamePrefix("TaskExecutor");
         taskExecutor.initialize();
         return taskExecutor;
