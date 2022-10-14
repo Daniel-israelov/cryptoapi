@@ -2,6 +2,8 @@ package com.example.cryptoapi.services;
 
 import com.example.cryptoapi.entities.CoinTypeEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,18 +21,23 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class ExternalEndpointService {
 
-    private final String externalEndpointUrl = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
+    @Value("${coingecko.url}")
+    private String externalEndpointUrl;
     private final RestTemplate template;
 
-    public ExternalEndpointService(RestTemplateBuilder templateBuilder) { this.template = templateBuilder.build(); }
+    public ExternalEndpointService(@NotNull RestTemplateBuilder templateBuilder) {
+        this.template = templateBuilder.build();
+    }
 
     /**
      * This method returns {@link CoinTypeEntity}s from an external endpoint asynchronously
      * as a {@link CompletableFuture<List>} of {@link CoinTypeEntity}s.
+     *
      * @return all {@link CoinTypeEntity}s from the external endpoint.
      */
     @Async
     public CompletableFuture<List<CoinTypeEntity>> pullExternalData() {
+        log.info("Remote API URL - '" + externalEndpointUrl + "'");
 
         List coinTypesAsJson = this.template.getForObject(this.externalEndpointUrl, List.class);
         List<CoinTypeEntity> coinTypeEntities = new ArrayList<>();
@@ -47,13 +54,13 @@ public class ExternalEndpointService {
         return CompletableFuture.completedFuture(coinTypeEntities);
     }
 
-    private CoinTypeEntity Parse(LinkedHashMap dataToParse) {
+    private CoinTypeEntity Parse(@NotNull LinkedHashMap dataToParse) {
         return new CoinTypeEntity(dataToParse.get("name").toString(),
-                            dataToParse.get("image").toString(),
-                            Double.parseDouble(dataToParse.get("current_price").toString()),
-                            Double.parseDouble(dataToParse.get("market_cap").toString()),
-                            Double.parseDouble(dataToParse.get("high_24h").toString()),
-                            Double.parseDouble(dataToParse.get("low_24h").toString()),
-                            Double.parseDouble(dataToParse.get("price_change_24h").toString()));
+                dataToParse.get("image").toString(),
+                Double.parseDouble(dataToParse.get("current_price").toString()),
+                Double.parseDouble(dataToParse.get("market_cap").toString()),
+                Double.parseDouble(dataToParse.get("high_24h").toString()),
+                Double.parseDouble(dataToParse.get("low_24h").toString()),
+                Double.parseDouble(dataToParse.get("price_change_24h").toString()));
     }
 }
