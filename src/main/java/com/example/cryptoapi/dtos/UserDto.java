@@ -31,7 +31,7 @@ public class UserDto {
     public Integer getAge() { return userEntity.getAge(); }
 
     @JsonProperty("gender")
-    public String getGender() { return userEntity.getIsMale() ? "Male" : "Female"; }
+    public String getGender() { return (userEntity.getIsMale() == null ? null : (userEntity.getIsMale() ? "Male" : "Female")); }
 
     @JsonProperty("wallets")
     public Set<EntityModel<WalletDto>> getWallets() {

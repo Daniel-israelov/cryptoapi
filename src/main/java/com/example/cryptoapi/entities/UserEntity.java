@@ -124,7 +124,7 @@ public class UserEntity {
                 "id=" + id +
                 ", identityNumber=" + identityNumber +
                 ", name='" + firstName + ' ' + lastName + '\'' +
-                ", gender=" + (isMale ? "male" : "female") +
+                ", gender=" + (isMale == null ? null : (isMale ? "male" : "female")) +
                 ", age=" + age +
                 ", wallets=" + walletEntities +
                 '}';
