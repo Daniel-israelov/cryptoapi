@@ -22,10 +22,15 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
     private final WalletDtoAssembler walletDtoAssembler;
+    private final UserService userService;
+    private final CoinService coinService;
 
-    public WalletService(WalletRepository walletRepository, WalletDtoAssembler walletDtoAssembler) {
+    public WalletService(WalletRepository walletRepository, WalletDtoAssembler walletDtoAssembler,
+                         UserService userService, CoinService coinService) {
         this.walletRepository = walletRepository;
         this.walletDtoAssembler = walletDtoAssembler;
+        this.userService = userService;
+        this.coinService = coinService;
     }
 
     public CollectionModel<EntityModel<WalletDto>> findAllWallets() {
@@ -76,8 +81,10 @@ public class WalletService {
     public void deleteWalletByUUID(UUID uuid) {
         WalletEntity wallet = walletRepository.findById(uuid)
                 .orElseThrow(() -> new WalletNotFoundException(uuid));
-        // TODO: fix crashing.
+        coinService.removeCoinsAttributionFromWallet(wallet);
+        userService.removeUsersAttributionToWallet(wallet);
         walletRepository.delete(wallet);
+        coinService.deleteAllUnattributedCoins();
         log.info("Wallet with uuid = " + uuid + " deleted in service = " + wallet);
     }
 }
