@@ -123,4 +123,16 @@ public class UserService {
             userRepository.save(owner);
         }
     }
+
+    public void linkWalletToUserByIdentityNumber(Long identityNumber, WalletEntity walletEntity) {
+        log.info("Trying to connect between user(identityNumber=" + identityNumber
+                + ") and the newly created wallet = " + walletEntity);
+        if (!userRepository.existsByIdentityNumber(identityNumber)) {
+            throw new UserNotFoundException(identityNumber);
+        }
+
+        UserEntity user = userRepository.findByIdentityNumber(identityNumber).get();
+        user.connectWallets(walletEntity);
+        userRepository.save(user);
+    }
 }

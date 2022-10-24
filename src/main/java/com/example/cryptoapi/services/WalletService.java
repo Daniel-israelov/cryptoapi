@@ -12,6 +12,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -86,5 +87,33 @@ public class WalletService {
         walletRepository.delete(wallet);
         coinService.deleteAllUnattributedCoins();
         log.info("Wallet with uuid = " + uuid + " deleted in service = " + wallet);
+    }
+
+    public EntityModel<WalletDto> createWalletAndConnectToUser(Long identityNumber,
+                                                               Optional<WalletEntity> optionalWalletEntity) {
+        log.info("Sending information from WalletService to UserService to link between user(identityNumber="
+                + identityNumber + ") and the newly created wallet = " + optionalWalletEntity);
+        if (optionalWalletEntity.isEmpty()) {
+            log.info("RequestBody was empty, thus could not create a wallet. Insert a 'provider' field.");
+            return null;
+        }
+        walletRepository.save(optionalWalletEntity.get());
+        userService.linkWalletToUserByIdentityNumber(identityNumber, optionalWalletEntity.get());
+        log.info("Wallet created and linked to user(identityNumber=" + identityNumber
+                + "). wallet = " + optionalWalletEntity);
+        return walletDtoAssembler.toModel(new WalletDto(optionalWalletEntity.get()));
+    }
+
+    public EntityModel<WalletDto> updateWallet(UUID uuid, Optional<WalletEntity> optionalWalletEntity) {
+        log.info("WalletEntity (wrapped by Optional<>) received in PUT request body = " + optionalWalletEntity);
+        WalletEntity walletToUpdate = walletRepository.findById(uuid)
+                .orElseThrow(() -> new WalletNotFoundException(uuid));
+        if (optionalWalletEntity.isPresent()) {
+            walletToUpdate.setProvider(optionalWalletEntity.get().getProvider() == null ?
+                    walletToUpdate.getProvider() : optionalWalletEntity.get().getProvider());
+            walletRepository.save(walletToUpdate);
+        }
+        log.info("Updated Wallet info after PUT request = " + walletToUpdate);
+        return walletDtoAssembler.toModel(new WalletDto(walletToUpdate));
     }
 }

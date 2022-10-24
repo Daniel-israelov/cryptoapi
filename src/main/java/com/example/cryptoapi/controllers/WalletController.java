@@ -1,14 +1,19 @@
 package com.example.cryptoapi.controllers;
 
 import com.example.cryptoapi.dtos.WalletDto;
+import com.example.cryptoapi.entities.WalletEntity;
 import com.example.cryptoapi.services.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -60,5 +65,29 @@ public class WalletController {
         return ResponseEntity.ok("Wallet with uuid = " + uuid + " deleted");
     }
 
-    // TODO: POST, PUT methods. (fix DELETE in service).
+    @PostMapping("/{userIdentityNumber}")
+    @Operation(summary = "POST request to create a new Wallet and connect it to the chosen User")
+    public ResponseEntity<?> createWalletAndConnectToUser(
+                                                        @PathVariable Long userIdentityNumber,
+                                                        @RequestBody(required = false) Optional<WalletEntity> optionalWalletEntity) {
+        try {
+            EntityModel<WalletDto> wallet = walletService.createWalletAndConnectToUser(userIdentityNumber, optionalWalletEntity);
+            if (wallet != null) {
+                return ResponseEntity
+                        .created(new URI(wallet.getRequiredLink(IanaLinkRelations.SELF).getHref())).body(wallet);
+            } else {
+                return ResponseEntity
+                        .badRequest().body("Failed to create wallet. Please insert a 'provider' field.");
+            }
+        } catch (URISyntaxException uriSyntaxException) {
+            return ResponseEntity.badRequest().body("Failed to create wallet = " + optionalWalletEntity);
+        }
+    }
+
+    @PutMapping("/{uuid}")
+    @Operation(summary = "PUT request to update a Wallet")
+    public ResponseEntity<EntityModel<WalletDto>> updateWallet(@PathVariable UUID uuid,
+                                                               @RequestBody(required = false) Optional<WalletEntity> optionalWalletEntity) {
+        return ResponseEntity.ok(walletService.updateWallet(uuid, optionalWalletEntity));
+    }
 }
