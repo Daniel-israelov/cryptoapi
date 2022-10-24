@@ -11,9 +11,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -114,6 +112,28 @@ public class WalletService {
             walletRepository.save(walletToUpdate);
         }
         log.info("Updated Wallet info after PUT request = " + walletToUpdate);
+        return walletDtoAssembler.toModel(new WalletDto(walletToUpdate));
+    }
+
+    public EntityModel<WalletDto> updateWalletOwners(UUID uuid, Set<Long> attach, Set<Long> detach) {
+        log.info("Updating the owners of wallet with uuid = " + uuid + " . . .");
+        WalletEntity walletToUpdate = walletRepository.findById(uuid)
+                .orElseThrow(() -> new WalletNotFoundException(uuid));
+        log.info("Updating the owners of wallet = " + walletToUpdate);
+
+        Set<Long> identityNumbersInBothSetsToIgnore = new HashSet<>();
+        for (Long identityNumber : attach) {
+            if (detach.contains(identityNumber)) {
+                identityNumbersInBothSetsToIgnore.add(identityNumber);
+            }
+        }
+        attach.removeAll(identityNumbersInBothSetsToIgnore);
+        detach.removeAll(identityNumbersInBothSetsToIgnore);
+        log.info("identityNumbers of users to attach as owners = " + attach);
+        log.info("identityNumbers of users to detach from owners = " + detach);
+        userService.updateWalletOwnersByIdentityNumbers(walletToUpdate, attach, detach);
+        walletRepository.save(walletToUpdate);
+
         return walletDtoAssembler.toModel(new WalletDto(walletToUpdate));
     }
 }

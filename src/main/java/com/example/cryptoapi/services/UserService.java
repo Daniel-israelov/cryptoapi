@@ -127,12 +127,30 @@ public class UserService {
     public void linkWalletToUserByIdentityNumber(Long identityNumber, WalletEntity walletEntity) {
         log.info("Trying to connect between user(identityNumber=" + identityNumber
                 + ") and the newly created wallet = " + walletEntity);
-        if (!userRepository.existsByIdentityNumber(identityNumber)) {
-            throw new UserNotFoundException(identityNumber);
-        }
-
-        UserEntity user = userRepository.findByIdentityNumber(identityNumber).get();
+        UserEntity user = userRepository.findByIdentityNumber(identityNumber)
+                .orElseThrow(() -> new UserNotFoundException(identityNumber));
         user.connectWallets(walletEntity);
         userRepository.save(user);
+    }
+
+    public void updateWalletOwnersByIdentityNumbers(WalletEntity walletEntity, Set<Long> attach, Set<Long> detach) {
+        log.info("Trying to connect users = " + attach + " to wallet = " + walletEntity);
+        for (Long identityNumber : attach) {
+            UserEntity user = userRepository.findByIdentityNumber(identityNumber)
+                    .orElseThrow(() -> new UserNotFoundException(identityNumber));
+            if (!user.getWalletEntities().contains(walletEntity)) {
+                user.connectWallets(walletEntity);
+                userRepository.save(user);
+            }
+        }
+        log.info("Trying to disconnect users = " + detach + " from wallet = " + walletEntity);
+        for (Long identityNumber : detach) {
+            UserEntity user = userRepository.findByIdentityNumber(identityNumber)
+                    .orElseThrow(() -> new UserNotFoundException(identityNumber));
+            if (user.getWalletEntities().contains(walletEntity)) {
+                user.disconnectWallets(walletEntity);
+                userRepository.save(user);
+            }
+        }
     }
 }

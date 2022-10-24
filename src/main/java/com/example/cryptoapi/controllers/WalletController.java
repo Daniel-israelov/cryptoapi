@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -89,5 +90,13 @@ public class WalletController {
     public ResponseEntity<EntityModel<WalletDto>> updateWallet(@PathVariable UUID uuid,
                                                                @RequestBody(required = false) Optional<WalletEntity> optionalWalletEntity) {
         return ResponseEntity.ok(walletService.updateWallet(uuid, optionalWalletEntity));
+    }
+
+    @PutMapping("/owners/{uuid}")
+    @Operation(summary = "PUT request to attach / detach a Wallet to Users by their identityNumbers")
+    public ResponseEntity<EntityModel<WalletDto>> updateWalletOwners(@PathVariable UUID uuid,
+            @RequestParam(required = false, defaultValue = "") Set<Long> attach,
+            @RequestParam(required = false, defaultValue = "") Set<Long> detach) {
+        return ResponseEntity.ok(walletService.updateWalletOwners(uuid, attach, detach));
     }
 }
