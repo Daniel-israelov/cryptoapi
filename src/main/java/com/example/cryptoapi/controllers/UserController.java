@@ -63,7 +63,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findAllByAgeRange(from, to));
     }
 
-    @PostMapping("/createnew")
+    @PostMapping
     @Operation(summary = "Create a new user")
     public ResponseEntity<?> createUser(@RequestBody UserEntity userEntity) {
         try {
