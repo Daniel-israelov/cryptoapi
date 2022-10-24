@@ -3,6 +3,7 @@ package com.example.cryptoapi.services;
 import com.example.cryptoapi.assemblers.UserDtoAssembler;
 import com.example.cryptoapi.dtos.UserDto;
 import com.example.cryptoapi.entities.UserEntity;
+import com.example.cryptoapi.entities.WalletEntity;
 import com.example.cryptoapi.exceptions.UserAlreadyExistsException;
 import com.example.cryptoapi.exceptions.UserIllegalAgeRangeException;
 import com.example.cryptoapi.exceptions.UserNotFoundException;
@@ -13,8 +14,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -113,5 +113,14 @@ public class UserService {
 
         log.info("Updated User info after PUT request = " + user);
         return userDtoAssembler.toModel(new UserDto(user));
+    }
+
+    public void removeUsersAttributionToWallet(WalletEntity wallet) {
+        log.info("Removing connections between all relevant users to wallet = " + wallet);
+        List<UserEntity> owners = wallet.getOwners().stream().toList();
+        for (UserEntity owner : owners) {
+            owner.disconnectWallets(wallet);
+            userRepository.save(owner);
+        }
     }
 }
