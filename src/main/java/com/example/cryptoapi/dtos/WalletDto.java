@@ -22,22 +22,18 @@ public class WalletDto {
     WalletEntity walletEntity;
 
     @JsonProperty("provider")
-    public String getProvider() {
-        return walletEntity.getProvider();
-    }
+    public String getProvider() { return walletEntity.getProvider(); }
 
     @JsonProperty("owners")
     public List<String> getOwners() {
         return walletEntity
                 .getOwners()
                 .stream()
-                .map(owner -> owner.getFirstName() + " " + owner.getLastName())
+                .map(owner -> owner.getFirstName() + " " + owner.getLastName() + " " + owner.getIdentityNumber())
                 .collect(Collectors.toList());
     }
 
     // TODO: change to Set<EntityModel<CoinDto>>
     @JsonProperty("coins")
-    public Set<CoinEntity> getCoins() {
-        return walletEntity.getCoinEntities();
-    }
+    public Set<CoinEntity> getCoins() { return walletEntity.getCoinEntities(); }
 }
