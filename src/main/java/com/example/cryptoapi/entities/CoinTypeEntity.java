@@ -1,5 +1,6 @@
 package com.example.cryptoapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,7 @@ public class CoinTypeEntity implements Serializable {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
     private String name;
     private String imageUrl;

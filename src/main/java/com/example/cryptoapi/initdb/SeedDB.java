@@ -95,10 +95,10 @@ public class SeedDB {
                                                            WalletRepository walletRepository) {
         return args -> {
             log.info("initializing concrete Coins . . .");
-            CoinTypeEntity bitcoin = coinTypeRepository.findByName("Bitcoin");
-            CoinTypeEntity ethereum = coinTypeRepository.findByName("Ethereum");
-            CoinTypeEntity cardano = coinTypeRepository.findByName("Cardano");
-            CoinTypeEntity polkadot = coinTypeRepository.findByName("Polkadot");
+            CoinTypeEntity bitcoin = coinTypeRepository.findByName("Bitcoin").get();
+            CoinTypeEntity ethereum = coinTypeRepository.findByName("Ethereum").get();
+            CoinTypeEntity cardano = coinTypeRepository.findByName("Cardano").get();
+            CoinTypeEntity polkadot = coinTypeRepository.findByName("Polkadot").get();
 
             CoinEntity concreteBitcoin = new CoinEntity(bitcoin);
             log.info("Creating concrete Bitcoin = " + coinRepository.save(concreteBitcoin));
