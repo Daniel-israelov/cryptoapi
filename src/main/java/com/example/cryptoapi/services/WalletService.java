@@ -136,4 +136,11 @@ public class WalletService {
 
         return walletDtoAssembler.toModel(new WalletDto(walletToUpdate));
     }
+
+    public void confirmWalletExistenceByUUID(UUID uuid) {
+        Optional<WalletEntity> optionalWalletEntity = walletRepository.findById(uuid);
+        if (optionalWalletEntity.isEmpty()) {
+            throw new WalletNotFoundException(uuid);
+        }
+    }
 }

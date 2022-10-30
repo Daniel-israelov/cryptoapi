@@ -153,4 +153,10 @@ public class UserService {
             }
         }
     }
+
+    public void confirmUserExistenceByIdentityNumber(Long identityNumber) {
+        if (!userRepository.existsByIdentityNumber(identityNumber)) {
+            throw new UserNotFoundException(identityNumber);
+        }
+    }
 }

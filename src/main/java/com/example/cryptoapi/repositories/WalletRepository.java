@@ -1,15 +1,19 @@
 package com.example.cryptoapi.repositories;
 
 import com.example.cryptoapi.entities.WalletEntity;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface WalletRepository extends CrudRepository<WalletEntity, UUID> {
+
+    @NotNull Optional<WalletEntity> findById(@NotNull UUID uuid);
 
     @Query(nativeQuery = true, value = "SELECT * FROM wallet_entity WHERE provider ILIKE :provider")
     List<WalletEntity> findByProvider(String provider);

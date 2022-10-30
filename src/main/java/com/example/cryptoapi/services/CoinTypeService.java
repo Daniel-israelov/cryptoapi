@@ -10,6 +10,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,5 +42,12 @@ public class CoinTypeService {
         List<CoinTypeEntity> coinTypes = coinTypeRepository.findByPriceRange(from ,to);
         log.info("CoinTypes with price range between " + from + " -> " + to + " retrieved = " + coinTypes);
         return coinTypeAssembler.toCollectionModel(coinTypes);
+    }
+
+    public void confirmCoinTypeExistenceByName(String name) {
+        Optional<CoinTypeEntity> optionalCoinTypeEntity = coinTypeRepository.findByName(name);
+        if (optionalCoinTypeEntity.isEmpty()) {
+            throw new CoinTypeNotFoundException(name);
+        }
     }
 }
