@@ -1,5 +1,6 @@
 package com.example.cryptoapi.assemblers;
 
+import com.example.cryptoapi.controllers.CoinController;
 import com.example.cryptoapi.controllers.CoinTypeController;
 import com.example.cryptoapi.entities.CoinTypeEntity;
 import org.springframework.hateoas.CollectionModel;
@@ -21,6 +22,8 @@ public class CoinTypeAssembler implements SimpleRepresentationModelAssembler<Coi
                 .getByName(Objects.requireNonNull(resource.getContent()).getName())).withSelfRel());
         resource.add(linkTo(methodOn(CoinTypeController.class)
                 .getAllCoinTypes()).withRel("all cointypes"));
+        resource.add(linkTo(methodOn(CoinController.class)
+                .getByCoinType(resource.getContent().getName())).withRel("all concrete coins"));
     }
 
     @Override
