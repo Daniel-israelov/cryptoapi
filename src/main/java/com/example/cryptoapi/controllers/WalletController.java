@@ -60,7 +60,7 @@ public class WalletController {
     }
 
     @DeleteMapping("/{uuid}")
-    @Operation(summary = "Delete wallet by uuid")
+    @Operation(summary = "Delete Wallet by uuid as well as all the Coins in the wallet")
     public ResponseEntity<String> deleteWalletByUUID(@PathVariable UUID uuid) {
         walletService.deleteWalletByUUID(uuid);
         return ResponseEntity.ok("Wallet with uuid = " + uuid + " deleted");
