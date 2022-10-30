@@ -1,11 +1,12 @@
 package com.example.cryptoapi.dtos;
 
-import com.example.cryptoapi.entities.CoinEntity;
+import com.example.cryptoapi.assemblers.CoinDtoAssembler;
 import com.example.cryptoapi.entities.WalletEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Value;
+import org.springframework.hateoas.EntityModel;
 
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,10 @@ public class WalletDto {
                 .collect(Collectors.toList());
     }
 
-    // TODO: change to Set<EntityModel<CoinDto>>
     @JsonProperty("coins")
-    public Set<CoinEntity> getCoins() { return walletEntity.getCoinEntities(); }
+    public Set<EntityModel<CoinDto>> getCoins() {
+        CoinDtoAssembler coinDtoAssembler = new CoinDtoAssembler();
+        return walletEntity.getCoinEntities()
+                .stream().map(CoinDto::new).map(coinDtoAssembler::toModel).collect(Collectors.toSet());
+    }
 }
