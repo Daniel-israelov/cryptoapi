@@ -20,7 +20,6 @@ public interface CoinRepository extends CrudRepository<CoinEntity, UUID> {
     @Query(nativeQuery = true, value = "delete from COIN_ENTITY where STORED_IN_WALLET_ENTITY_ID is null")
     void deleteAllUnattributedCoins();
 
-    @Query(nativeQuery = true, value = "select * from coin_entity where uuid = :uuid")
     @NotNull
     Optional<CoinEntity> findById(@NotNull UUID uuid);
 
