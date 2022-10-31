@@ -4,13 +4,11 @@ import com.example.cryptoapi.dtos.CoinDto;
 import com.example.cryptoapi.services.CoinService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -51,5 +49,28 @@ public class CoinController {
     @Operation(summary = "GET Coin by User identityNumber")
     public ResponseEntity<CollectionModel<EntityModel<CoinDto>>> getByUserIdentityNumber(@PathVariable Long userIdentityNumber) {
         return ResponseEntity.ok(coinService.getByUserIdentityNumber(userIdentityNumber));
+    }
+
+    // TODO: add POST / PUT / DELETE methods.
+    @DeleteMapping("/{uuid}")
+    @Operation(summary = "DELETE Coin by UUID and all references to the coin")
+    public ResponseEntity<String> deleteCoinByUUID(@PathVariable UUID uuid) {
+        coinService.deleteCoinByUUID(uuid);
+        return ResponseEntity.ok("Coin with uuid = " + uuid + " deleted");
+    }
+
+    @PostMapping("/{coinType}/{walletUUID}")
+    @Operation(summary = "POST request to create a new Coin of a specific CoinType and insert to a specific Wallet")
+    public ResponseEntity<?> createCoin(@PathVariable @NotNull String coinType,
+                                        @PathVariable @NotNull UUID walletUUID) {
+        // TODO: (in CoinService.createCoin())
+        //  1. check if coinType exists in our database (Bitcoin, Ethereum, Cardano, etc...).
+        //      if not - throw corresponding exception.
+        //  2. check if walletUUID exists in our database.
+        //      if not - throw corresponding exception.
+        //  3. create a new Coin of the requested type.
+        //  4. link between the corresponding Wallet and the newly created Coin.
+        //  5. save to database.
+        return null;
     }
 }
