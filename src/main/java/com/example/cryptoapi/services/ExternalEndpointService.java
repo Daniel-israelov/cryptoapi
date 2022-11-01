@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -39,11 +40,13 @@ public class ExternalEndpointService {
 
     /**
      * This method executes a ping to the external API server to check if the server is up & available.<br>
-     * If the server is not available for any reason (status code != 200), a new {@link ApiServerNotAvailableException} will be thrown.
+     * If the server is not available for any reason (status code != 200), a new {@link ApiServerNotAvailableException} will be thrown.<br>
+     * In-case the server is down (i.e. failed ping), the method will retry to ping the server 2 more times.
      *
      * @throws IOException If the parsed URL fails to comply with the specific syntax.
      */
     @PostConstruct
+    @Retryable(value = ApiServerNotAvailableException.class)
     public void ping() throws IOException {
         URL pingUrl = new URL(externalEndpointPingUrl);
         HttpURLConnection connection = (HttpURLConnection) pingUrl.openConnection();
