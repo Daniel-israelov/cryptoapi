@@ -37,6 +37,15 @@ public interface CoinRepository extends CrudRepository<CoinEntity, UUID> {
             """)
     List<CoinEntity> getByWalletUUID(String walletUUIDAsString);
 
+    /**
+     * This method retrieves all the concrete coins held by a specific user corresponding to a given identity number.
+     * The procedure:
+     *  1. get the required user from USER_ENTITY table
+     *  2. get the wallets linked to the user in USERS_WALLETS table
+     *  3. retrieve all the concrete coins that are stored in the wallets that returned in section (2) from COIN_ENTITY table
+     * @param userIdentityNumber
+     * @return list of all the concrete coins the desired user currently has
+     */
     @Query(nativeQuery = true, value = """
             select *
             from coin_entity

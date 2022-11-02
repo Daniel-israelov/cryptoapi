@@ -37,6 +37,10 @@ public class CoinService {
         this.coinTypeService = coinTypeService;
     }
 
+    /**
+     * This method removes the connection between a given {@link WalletEntity} and all it's {@link CoinEntity}s
+     * @param wallet
+     */
     public void removeCoinsAttributionFromWallet(WalletEntity wallet) {
         log.info("Removing connections between all relevant coins and wallet = " + wallet);
         Set<CoinEntity> coins = wallet.getCoinEntities();
@@ -46,6 +50,9 @@ public class CoinService {
         }
     }
 
+    /**
+     * This method deletes from database all the {@link CoinEntity}s which are not linked to a {@link WalletEntity}
+     */
     public void deleteAllUnattributedCoins() {
         log.info("Deleting all the coins that are not linked to a wallet . . .");
         coinRepository.deleteAllUnattributedCoins();

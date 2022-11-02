@@ -18,6 +18,18 @@ public interface WalletRepository extends CrudRepository<WalletEntity, UUID> {
     @Query(nativeQuery = true, value = "SELECT * FROM wallet_entity WHERE provider ILIKE :provider")
     List<WalletEntity> findByProvider(String provider);
 
+    /**
+     * This method retrieves all the wallets which contains a number of coins within a certain range,
+     * including empty wallets.
+     * The procedure:
+     *  1. pair each non-empty wallet with the number of coins it holds from WALLET_ENTITY_COIN_ENTITIES table
+     *  2. get the uuid of each of the wallets from section (1) which fulfills the range condition
+     *  3. retrieve all the relevant wallets from WALLET_ENTITY table
+     *     corresponding to the uuids received in section (2) AND all the empty wallets
+     * @param from
+     * @param to
+     * @return list of all the wallets with number of coins between the given range (including empty wallets)
+     */
     @Query(nativeQuery = true, value = """
             select *
             from wallet_entity
@@ -35,6 +47,17 @@ public interface WalletRepository extends CrudRepository<WalletEntity, UUID> {
             """)
     List<WalletEntity> findAllByCoinsRangeFromEquals0(Integer from, Integer to);
 
+    /**
+     * This method retrieves all the wallets which contains a number of coins within a certain range,
+     * not including empty wallets.
+     * The procedure:
+     *  1. pair each non-empty wallet with the number of coins it holds from WALLET_ENTITY_COIN_ENTITIES table
+     *  2. get the uuid of each of the wallets from section (1) which fulfills the range condition
+     *  3. retrieve all the relevant wallets from WALLET_ENTITY table
+     * @param from
+     * @param to
+     * @return list of all the wallets with number of coins between the given range (not including empty wallets)
+     */
     @Query(nativeQuery = true, value = """
             select *
             from wallet_entity
@@ -48,6 +71,15 @@ public interface WalletRepository extends CrudRepository<WalletEntity, UUID> {
             """)
     List<WalletEntity> findAllByCoinsRangeFromNotEquals0(Integer from, Integer to);
 
+    /**
+     * This method retrieves all the wallets held by a specific user corresponding to a given identity number
+     * The procedure:
+     *  1. get the required user from USER_ENTITY table
+     *  2. get the wallets linked to the user in USERS_WALLETS table
+     *  3. retrieve all the wallets that returned in section (2) from WALLET_ENTITY table
+     * @param ownerIdentityNumber
+     * @return list of all the wallets that the desired user currently holds
+     */
     @Query(nativeQuery = true, value = """
             select *
             from wallet_entity

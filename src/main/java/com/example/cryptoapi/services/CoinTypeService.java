@@ -44,6 +44,11 @@ public class CoinTypeService {
         return coinTypeAssembler.toCollectionModel(coinTypes);
     }
 
+    /**
+     * This method throws a {@link CoinTypeNotFoundException} in case there is no {@link CoinTypeEntity}
+     * corresponding to the given name
+     * @param name
+     */
     public void confirmCoinTypeExistenceByName(String name) {
         Optional<CoinTypeEntity> optionalCoinTypeEntity = coinTypeRepository.findByName(name);
         if (optionalCoinTypeEntity.isEmpty()) {

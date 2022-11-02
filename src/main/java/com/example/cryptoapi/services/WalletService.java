@@ -2,6 +2,7 @@ package com.example.cryptoapi.services;
 
 import com.example.cryptoapi.assemblers.WalletDtoAssembler;
 import com.example.cryptoapi.dtos.WalletDto;
+import com.example.cryptoapi.entities.UserEntity;
 import com.example.cryptoapi.entities.WalletEntity;
 import com.example.cryptoapi.exceptions.WalletIllegalCoinRangeException;
 import com.example.cryptoapi.exceptions.WalletNotFoundException;
@@ -87,6 +88,12 @@ public class WalletService {
         log.info("Wallet with uuid = " + uuid + " deleted in service = " + wallet);
     }
 
+    /**
+     * This method is responsible for creating a new {@link WalletEntity} and connect to a {@link UserEntity} as an owner
+     * @param identityNumber
+     * @param optionalWalletEntity
+     * @return {@link EntityModel<WalletDto>} representing the created {@link WalletEntity}
+     */
     public EntityModel<WalletDto> createWalletAndConnectToUser(Long identityNumber,
                                                                Optional<WalletEntity> optionalWalletEntity) {
         log.info("Sending information from WalletService to UserService to link between user(identityNumber="
@@ -115,6 +122,13 @@ public class WalletService {
         return walletDtoAssembler.toModel(new WalletDto(walletToUpdate));
     }
 
+    /**
+     * This method updates the list of {@link UserEntity} owners in a desired {@link WalletEntity}
+     * by removing existing {@link UserEntity}s or adding new {@link UserEntity}s as owners
+     * @param uuid
+     * @param attach
+     * @param detach
+     */
     public EntityModel<WalletDto> updateWalletOwners(UUID uuid, Set<Long> attach, Set<Long> detach) {
         log.info("Updating the owners of wallet with uuid = " + uuid + " . . .");
         WalletEntity walletToUpdate = walletRepository.findById(uuid)
@@ -137,6 +151,11 @@ public class WalletService {
         return walletDtoAssembler.toModel(new WalletDto(walletToUpdate));
     }
 
+    /**
+     * This method throws a {@link WalletNotFoundException} in case there is no {@link WalletEntity}
+     * corresponding to the given uuid
+     * @param uuid
+     */
     public void confirmWalletExistenceByUUID(UUID uuid) {
         Optional<WalletEntity> optionalWalletEntity = walletRepository.findById(uuid);
         if (optionalWalletEntity.isEmpty()) {

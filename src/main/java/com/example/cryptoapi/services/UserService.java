@@ -115,6 +115,10 @@ public class UserService {
         return userDtoAssembler.toModel(new UserDto(user));
     }
 
+    /**
+     * This method removes the connection between a given {@link WalletEntity} and all it's {@link UserEntity} owners
+     * @param wallet
+     */
     public void removeUsersAttributionToWallet(WalletEntity wallet) {
         log.info("Removing connections between all relevant users to wallet = " + wallet);
         List<UserEntity> owners = wallet.getOwners().stream().toList();
@@ -124,6 +128,11 @@ public class UserService {
         }
     }
 
+    /**
+     * This method connects between a desired {@link UserEntity} and a given {@link WalletEntity}
+     * @param identityNumber
+     * @param walletEntity
+     */
     public void linkWalletToUserByIdentityNumber(Long identityNumber, WalletEntity walletEntity) {
         log.info("Trying to connect between user(identityNumber=" + identityNumber
                 + ") and the newly created wallet = " + walletEntity);
@@ -133,6 +142,13 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /**
+     * This method updates the list of {@link UserEntity} owners in a given {@link WalletEntity}
+     * by removing existing {@link UserEntity}s or adding new {@link UserEntity}s as owners
+     * @param walletEntity
+     * @param attach
+     * @param detach
+     */
     public void updateWalletOwnersByIdentityNumbers(WalletEntity walletEntity, Set<Long> attach, Set<Long> detach) {
         log.info("Trying to connect users = " + attach + " to wallet = " + walletEntity);
         for (Long identityNumber : attach) {
@@ -154,6 +170,11 @@ public class UserService {
         }
     }
 
+    /**
+     * This method throws a {@link UserNotFoundException} in case there is no {@link UserEntity}
+     * corresponding to the given identityNumber
+     * @param identityNumber
+     */
     public void confirmUserExistenceByIdentityNumber(Long identityNumber) {
         if (!userRepository.existsByIdentityNumber(identityNumber)) {
             throw new UserNotFoundException(identityNumber);
