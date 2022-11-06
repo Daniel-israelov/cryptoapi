@@ -58,14 +58,4 @@ public interface CoinRepository extends CrudRepository<CoinEntity, UUID> {
                     where identity_number = :userIdentityNumber))
             """)
     List<CoinEntity> getByUserIdentityNumber(Long userIdentityNumber);
-
-    @Modifying
-    @Transactional
-    @Query(nativeQuery = true, value = "delete from wallet_entity_coin_entities where coin_entities_uuid = :uuid")
-    void deleteForeignKeyById(@NotNull UUID uuid);
-
-    @Modifying
-    @Transactional
-    @Query(nativeQuery = true, value = "delete from coin_entity where uuid = :uuid")
-    void deleteById(@NotNull UUID uuid);
 }

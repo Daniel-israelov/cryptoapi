@@ -17,9 +17,7 @@ import java.util.concurrent.Executor;
 @Slf4j
 public class CryptoApiApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(CryptoApiApplication.class, args);
-    }
+    public static void main(String[] args) { SpringApplication.run(CryptoApiApplication.class, args); }
 
     @Bean
     public RestTemplateBuilder builder() {

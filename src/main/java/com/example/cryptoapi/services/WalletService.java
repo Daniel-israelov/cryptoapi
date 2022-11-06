@@ -2,6 +2,7 @@ package com.example.cryptoapi.services;
 
 import com.example.cryptoapi.assemblers.WalletDtoAssembler;
 import com.example.cryptoapi.dtos.WalletDto;
+import com.example.cryptoapi.entities.CoinEntity;
 import com.example.cryptoapi.entities.UserEntity;
 import com.example.cryptoapi.entities.WalletEntity;
 import com.example.cryptoapi.exceptions.WalletIllegalCoinRangeException;
@@ -161,5 +162,13 @@ public class WalletService {
         if (optionalWalletEntity.isEmpty()) {
             throw new WalletNotFoundException(uuid);
         }
+    }
+
+    public void removeCoinFromWallet(CoinEntity coinToRemove) {
+        log.info("Removing coin = " + coinToRemove);
+        WalletEntity wallet = coinToRemove.getStoredInWalletEntity();
+        wallet.getCoinEntities().remove(coinToRemove);
+        walletRepository.save(wallet);
+        log.info("Coin removed. Wallet info = " + wallet);
     }
 }

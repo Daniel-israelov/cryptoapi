@@ -101,9 +101,7 @@ public class CoinService {
         CoinEntity coin = coinRepository.findById(uuid)
                 .orElseThrow(() -> new CoinNotFoundException(uuid));
         log.info("trying to delete coin with uuid = " + uuid + " in service . . .");
-        // TODO: both queries are sent without failing, but the rows still exists in the database.
-        //  note - when using the SAME queries in the browser, the rows are deleted.
-        coinRepository.deleteForeignKeyById(uuid);
+        walletService.removeCoinFromWallet(coin);
         coinRepository.deleteById(uuid);
         log.info("coin with uuid = " + uuid + " deleted in service = " + coin);
     }
