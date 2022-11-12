@@ -34,6 +34,11 @@ public class CoinEntity implements Serializable {
         storedInWalletEntity = null;
     }
 
+    public CoinEntity(@NotNull CoinTypeEntity coinTypeEntity, @NotNull WalletEntity walletEntity) {
+        this.coinTypeEntity = coinTypeEntity;
+        this.storedInWalletEntity = walletEntity;
+    }
+
     public void storeInWallet(@NotNull WalletEntity walletEntity) { this.storedInWalletEntity = walletEntity; }
 
     @Override
