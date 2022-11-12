@@ -7,9 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 @RestController
@@ -51,7 +54,6 @@ public class CoinController {
         return ResponseEntity.ok(coinService.getByUserIdentityNumber(userIdentityNumber));
     }
 
-    // TODO: add POST / PUT / DELETE methods.
     @DeleteMapping("/{uuid}")
     @Operation(summary = "DELETE Coin by UUID and all references to the coin")
     public ResponseEntity<String> deleteCoinByUUID(@PathVariable UUID uuid) {
@@ -63,14 +65,22 @@ public class CoinController {
     @Operation(summary = "POST request to create a new Coin of a specific CoinType and insert to a specific Wallet")
     public ResponseEntity<?> createCoin(@PathVariable @NotNull String coinType,
                                         @PathVariable @NotNull UUID walletUUID) {
-        // TODO: (in CoinService.createCoin())
-        //  1. check if coinType exists in our database (Bitcoin, Ethereum, Cardano, etc...).
-        //      if not - throw corresponding exception.
-        //  2. check if walletUUID exists in our database.
-        //      if not - throw corresponding exception.
-        //  3. create a new Coin of the requested type.
-        //  4. link between the corresponding Wallet and the newly created Coin.
-        //  5. save to database.
-        return null;
+        EntityModel<CoinDto> coin = coinService.createCoin(coinType, walletUUID);
+        try {
+            return ResponseEntity
+                    .created(new URI(coin.getRequiredLink(IanaLinkRelations.SELF).getHref())).body(coin);
+        } catch (URISyntaxException uriSyntaxException) {
+            return ResponseEntity
+                    .badRequest().body("Failed to add Coin of type = " + coinType + " to Wallet with uuid = " + walletUUID);
+        }
+    }
+
+    @PutMapping("/{coinUUID}")
+    @Operation(summary = "PUT request to move concrete Coins between Wallets")
+    public ResponseEntity<EntityModel<CoinDto>> changeStoringWalletOfCoin(
+            @PathVariable @NotNull UUID coinUUID,
+            @RequestParam(required = true, defaultValue = "") @NotNull UUID fromWallet,
+            @RequestParam(required = true, defaultValue = "") @NotNull UUID toWallet) {
+        return ResponseEntity.ok(coinService.changeStoringWalletOfCoin(coinUUID, fromWallet, toWallet));
     }
 }

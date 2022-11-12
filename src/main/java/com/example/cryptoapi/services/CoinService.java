@@ -3,6 +3,7 @@ package com.example.cryptoapi.services;
 import com.example.cryptoapi.assemblers.CoinDtoAssembler;
 import com.example.cryptoapi.dtos.CoinDto;
 import com.example.cryptoapi.entities.CoinEntity;
+import com.example.cryptoapi.entities.CoinTypeEntity;
 import com.example.cryptoapi.entities.WalletEntity;
 import com.example.cryptoapi.exceptions.CoinNotFoundException;
 import com.example.cryptoapi.repositories.CoinRepository;
@@ -13,6 +14,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -100,9 +102,45 @@ public class CoinService {
     public void deleteCoinByUUID(UUID uuid) {
         CoinEntity coin = coinRepository.findById(uuid)
                 .orElseThrow(() -> new CoinNotFoundException(uuid));
-        log.info("trying to delete coin with uuid = " + uuid + " in service . . .");
+        log.info("Trying to delete coin with uuid = " + uuid + " in service . . .");
         walletService.removeCoinFromWallet(coin);
         coinRepository.deleteById(uuid);
-        log.info("coin with uuid = " + uuid + " deleted in service = " + coin);
+        log.info("Coin with uuid = " + uuid + " deleted in service = " + coin);
+    }
+
+    public EntityModel<CoinDto> createCoin(String coinType, UUID walletUUID) {
+        log.info("Confirming existence of CoinTypeEntity by name = " + coinType + " . . .");
+        coinTypeService.confirmCoinTypeExistenceByName(coinType);
+        log.info("Confirming existence of WalletEntity by UUID = " + walletUUID + " . . .");
+        walletService.confirmWalletExistenceByUUID(walletUUID);
+        log.info("Trying to create a new coin of type = " + coinType
+                + ", link to Wallet with uuid = " + walletUUID + ", and save to DB . . .");
+        CoinTypeEntity coinTypeEntity = coinTypeService.getByName(coinType).getContent();
+        WalletEntity walletEntity = Objects.requireNonNull(walletService.getByUUID(walletUUID).getContent()).getWalletEntity();
+        CoinEntity newCoin = coinRepository.save(new CoinEntity(coinTypeEntity, walletEntity));
+        log.info("Coin created and saved to DB. Coin info = " + newCoin);
+        log.info("Trying to add the new CoinEntity to the desired WalletEntity . . .");
+        walletService.addCoinToWallet(newCoin);
+        log.info("Coin = " + newCoin + " - was added to Wallet = " + walletEntity);
+        return coinDtoAssembler.toModel(new CoinDto(newCoin));
+    }
+
+    public EntityModel<CoinDto> changeStoringWalletOfCoin(UUID coinUUID, UUID fromWalletUUID, UUID toWalletUUID) {
+        CoinEntity coin = coinRepository.findById(coinUUID)
+                .orElseThrow(() -> new CoinNotFoundException(coinUUID));
+        log.info("Confirming existence of WalletEntity by UUID = " + fromWalletUUID + " . . .");
+        walletService.confirmWalletExistenceByUUID(fromWalletUUID);
+        log.info("Confirming existence of WalletEntity by UUID = " + toWalletUUID + " . . .");
+        walletService.confirmWalletExistenceByUUID(toWalletUUID);
+        log.info("Trying to move Coin with uuid = " + coinUUID
+                + " from Wallet with uuid = " + fromWalletUUID + " to Wallet with uuid = " + toWalletUUID + " . . .");
+        WalletEntity newStoringWallet = Objects.requireNonNull(walletService.getByUUID(toWalletUUID).getContent()).getWalletEntity();
+        walletService.removeCoinFromWallet(coin);
+        coin.setStoredInWalletEntity(newStoringWallet);
+        coinRepository.save(coin);
+        walletService.addCoinToWallet(coin);
+        log.info("Successfully moved Coin = " + coin + "from Wallet with uuid = " + fromWalletUUID
+                + " to Wallet with uuid = " + toWalletUUID + ". New storing Wallet info = " + newStoringWallet);
+        return coinDtoAssembler.toModel(new CoinDto(coin));
     }
 }

@@ -171,4 +171,12 @@ public class WalletService {
         walletRepository.save(wallet);
         log.info("Coin removed. Wallet info = " + wallet);
     }
+
+    public void addCoinToWallet(CoinEntity coinToAdd) {
+        log.info("Adding coin to it's relevant wallet. Coin = " + coinToAdd);
+        WalletEntity wallet = coinToAdd.getStoredInWalletEntity();
+        wallet.getCoinEntities().add(coinToAdd);
+        walletRepository.save(wallet);
+        log.info("Coin added. Wallet info = " + wallet);
+    }
 }
