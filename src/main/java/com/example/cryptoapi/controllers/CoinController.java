@@ -77,10 +77,17 @@ public class CoinController {
 
     @PutMapping("/{coinUUID}")
     @Operation(summary = "PUT request to move concrete Coins between Wallets")
-    public ResponseEntity<EntityModel<CoinDto>> changeStoringWalletOfCoin(
+    public ResponseEntity<?> changeStoringWalletOfCoin(
             @PathVariable @NotNull UUID coinUUID,
             @RequestParam(required = true, defaultValue = "") @NotNull UUID fromWallet,
             @RequestParam(required = true, defaultValue = "") @NotNull UUID toWallet) {
-        return ResponseEntity.ok(coinService.changeStoringWalletOfCoin(coinUUID, fromWallet, toWallet));
+        EntityModel<CoinDto> operationResult = coinService.changeStoringWalletOfCoin(coinUUID, fromWallet, toWallet);
+        if (operationResult != null) {
+            return ResponseEntity.ok(operationResult);
+        } else {
+            return ResponseEntity
+                    .badRequest().body("Wallet corresponding to uuid = " + fromWallet
+                            + " does not contain a Coin corresponding to uuid = " + coinUUID);
+        }
     }
 }

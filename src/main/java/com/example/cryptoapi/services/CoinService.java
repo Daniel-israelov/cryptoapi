@@ -132,15 +132,22 @@ public class CoinService {
         walletService.confirmWalletExistenceByUUID(fromWalletUUID);
         log.info("Confirming existence of WalletEntity by UUID = " + toWalletUUID + " . . .");
         walletService.confirmWalletExistenceByUUID(toWalletUUID);
-        log.info("Trying to move Coin with uuid = " + coinUUID
-                + " from Wallet with uuid = " + fromWalletUUID + " to Wallet with uuid = " + toWalletUUID + " . . .");
-        WalletEntity newStoringWallet = Objects.requireNonNull(walletService.getByUUID(toWalletUUID).getContent()).getWalletEntity();
-        walletService.removeCoinFromWallet(coin);
-        coin.setStoredInWalletEntity(newStoringWallet);
-        coinRepository.save(coin);
-        walletService.addCoinToWallet(coin);
-        log.info("Successfully moved Coin = " + coin + "from Wallet with uuid = " + fromWalletUUID
-                + " to Wallet with uuid = " + toWalletUUID + ". New storing Wallet info = " + newStoringWallet);
+        log.info("Confirming Wallet with uuid = " + fromWalletUUID + " indeed contains Coin = " + coin + " . . .");
+        if (!coin.getStoredInWalletEntity().getId().equals(fromWalletUUID)) {
+            log.info("Wallet with uuid = " + fromWalletUUID + " does not contain Coin = " + coin) ;
+            return null;
+        }
+        if (!fromWalletUUID.equals(toWalletUUID)) {
+            log.info("Trying to move Coin with uuid = " + coinUUID
+                    + " from Wallet with uuid = " + fromWalletUUID + " to Wallet with uuid = " + toWalletUUID + " . . .");
+            WalletEntity newStoringWallet = Objects.requireNonNull(walletService.getByUUID(toWalletUUID).getContent()).getWalletEntity();
+            walletService.removeCoinFromWallet(coin);
+            coin.setStoredInWalletEntity(newStoringWallet);
+            coinRepository.save(coin);
+            walletService.addCoinToWallet(coin);
+            log.info("Successfully moved Coin = " + coin + "from Wallet with uuid = " + fromWalletUUID
+                    + " to Wallet with uuid = " + toWalletUUID + ". New storing Wallet info = " + newStoringWallet);
+        }
         return coinDtoAssembler.toModel(new CoinDto(coin));
     }
 }
